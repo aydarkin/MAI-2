@@ -76,58 +76,33 @@ class AuditoriumBehaviour extends SimpleBehaviour {
                         myAgent.send(reply);
                     }
                     case "proposal" -> {
-                        // читаем группу, день, урок
-                        var myMsg = (MyMessage) mes.getContentObject();
-                        var obj = (ArrayList<String>) myMsg.payload;
-                        var group = obj.get(0);
-                        var day = Integer.parseInt(obj.get(1));
-                        var lesson = Integer.parseInt(obj.get(2));
-                        var subject = obj.get(3);
-                        var type = Integer.parseInt(obj.get(4));
-                        var studentCount = Integer.parseInt(obj.get(5));
-
-                        // предложение
-                        if (model.isBusy(day, lesson) || !model.canOccupation(type, studentCount)) {
-                            // todo возможно нужно добавить force версию
-                            myMsg.payload = model.getAvailable();
-                            reply.setContentObject(myMsg);
-
-                            // FAILURE - если не подходит тип
-                            // CANCEL - если занято
-                            reply.setPerformative(model.canOccupation(day, lesson)
-                                    ? ACLMessage.CANCEL
-                                    : ACLMessage.FAILURE);
-                        } else {
-                            reply.setPerformative(ACLMessage.AGREE);
-
-                            // вместо имени группы записываем свое имя
-                            obj.set(0, model.name);
-                            reply.setContentObject(obj);
-
-                            // записываем группу в календарь
-                            model.timeTable.get(day).get(lesson).group = group;
-                            model.timeTable.get(day).get(lesson).type = type;
-                            model.timeTable.get(day).get(lesson).subject = subject;
-                        }
-                        myAgent.send(reply);
+                        proposalHandler(mes);
                     }
                     case "whatGroup" -> {
-                        //fixme копировать из учитэля
-
-
-
                         // читаем день, урок
                         var myMsg = (MyMessage) mes.getContentObject();
                         var obj = (ArrayList<String>) myMsg.payload;
+                        //print("whatGroup: " + obj.toString());
+
                         var day = Integer.parseInt(obj.get(0));
                         var lesson = Integer.parseInt(obj.get(1));
 
-                        reply.setContent(model.whatGroup(day,lesson));
+                        var group = model.whatGroup(day,lesson);
+                        if (model.isBusy(day, lesson) && group == null) {
+                            reply.setPerformative(ACLMessage.CANCEL);
+                        } else {
+                            reply.setPerformative(ACLMessage.AGREE);
+                            obj.add(group);
+                        }
+
+                        // обратно
+                        reply.setContentObject(myMsg);
                         myAgent.send(reply);
                     }
                     case "cancelLesson" -> {
                         // читаем группу, день, урок
-                        var obj = (ArrayList<String>) mes.getContentObject();
+                        var myMsg = (MyMessage) mes.getContentObject();
+                        var obj = (ArrayList<String>) myMsg.payload;
                         var group = obj.get(0);
                         var day = Integer.parseInt(obj.get(1));
                         var lesson = Integer.parseInt(obj.get(2));
@@ -140,7 +115,8 @@ class AuditoriumBehaviour extends SimpleBehaviour {
                     }
                     case "transferLesson" -> {
                         // читаем группу, день, урок
-                        var obj = (ArrayList<String>) mes.getContentObject();
+                        var myMsg = (MyMessage) mes.getContentObject();
+                        var obj = (ArrayList<String>) myMsg.payload;
                         var group = obj.get(0);
                         var day = Integer.parseInt(obj.get(1));
                         var lesson = Integer.parseInt(obj.get(2));
@@ -156,6 +132,8 @@ class AuditoriumBehaviour extends SimpleBehaviour {
                             var newOccupation = model.timeTable.get(newDay).get(newLesson);
                             if (newOccupation.group == null) {
                                 newOccupation.group = group;
+                                myMsg.teacher = model.name;
+                                reply.setContentObject(myMsg);
                                 reply.setPerformative(ACLMessage.AGREE);
                             }
                         }
@@ -175,6 +153,41 @@ class AuditoriumBehaviour extends SimpleBehaviour {
                 e.printStackTrace();
             }
         }
+    }
+
+    void proposalHandler(ACLMessage mes) throws IOException, UnreadableException {
+        var reply = mes.createReply();
+
+        // читаем группу, день, урок
+        var myMsg = (MyMessage) mes.getContentObject();
+        var obj = (ArrayList<String>) myMsg.payload;
+        var group = obj.get(0);
+        var day = Integer.parseInt(obj.get(1));
+        var lesson = Integer.parseInt(obj.get(2));
+        var subject = obj.get(3);
+        var type = Integer.parseInt(obj.get(4));
+
+        // предложение
+        if (model.isBusy(day, lesson) || !model.canOccupation(type, 0)) {
+            print("Занято " + day + " " + lesson);
+
+            myMsg.payload = model.getAvailable();
+            reply.setContentObject(myMsg);
+
+            reply.setPerformative(ACLMessage.CANCEL);
+        } else {
+            reply.setPerformative(ACLMessage.AGREE);
+            // вместо имени группы записываем свое имя
+            obj.set(0, model.name);
+            reply.setContentObject(myMsg);
+
+            // записываем группу в календарь
+            print("Записываю " + group + " в " + day + " " + lesson);
+            model.timeTable.get(day).get(lesson).group = group;
+            model.timeTable.get(day).get(lesson).subject = subject;
+            model.timeTable.get(day).get(lesson).type = type;
+        }
+        myAgent.send(reply);
     }
 
     @Override

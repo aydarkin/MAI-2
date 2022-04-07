@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -36,7 +38,11 @@ class ClientBehaviour extends SimpleBehaviour {
     private int step;
     private final MessageTemplate readyServerTemplate;
     private final MessageTemplate resultTemplate;
+    private final MessageTemplate readyChildTemplate;
+    private final MessageTemplate syncTemplate;
     private final ArrayList<StudentGroup> groups;
+    private final HashSet<String> readyGroups;
+    private final HashSet<String> syncGroups;
     private AID server;
     private final JSONArray results;
     private final String outputFile;
@@ -45,6 +51,8 @@ class ClientBehaviour extends SimpleBehaviour {
         super(agent);
         this.step = 1;
         this.groups = MainReaderWriter.readStudents(inputFile);
+        this.readyGroups = new HashSet<String>();
+        this.syncGroups = new HashSet<String>();
         this.results = new JSONArray();
         this.outputFile = outputFile;
 
@@ -59,6 +67,18 @@ class ClientBehaviour extends SimpleBehaviour {
             String conversationID = message.getConversationId();
             // если информирование и результат
             return conversationID.equals("TIMETABLE_GROUP");
+        });
+
+        this.readyChildTemplate = new MessageTemplate((MatchExpression) message -> {
+            String conversationID = message.getConversationId();
+            // если информирование и результат
+            return conversationID.equals("READY_GROUP");
+        });
+
+        this.syncTemplate = new MessageTemplate((MatchExpression) message -> {
+            String conversationID = message.getConversationId();
+            // если информирование и результат
+            return conversationID.equals("SYNC_GROUP");
         });
 
         // ждем запуск сервера
@@ -147,29 +167,50 @@ class ClientBehaviour extends SimpleBehaviour {
                 }
             }
             case 2 -> {
-                var flag = true;
-                while (flag) {
-                    var readyGroups = DFUtilities.searchService(myAgent, "groupReady");
+                var resultRequest = this.myAgent.receive(this.readyChildTemplate);
+                if (resultRequest != null) {
+                    var group = resultRequest.getContent();
+                    if (resultRequest.getPerformative() == ACLMessage.AGREE) {
+                        readyGroups.add(group);
+                    } else {
+                        readyGroups.remove(group);
+                    }
+                    Output((resultRequest.getPerformative() == ACLMessage.AGREE ? "Готов " : "Не готов ")
+                            + group + " " + readyGroups.size() + "/" + groups.size());
 
-                    if (readyGroups.length >= this.groups.size()) {
-                        // стартовое сообщение
+                    if (readyGroups.size() >= groups.size()) {
                         var mes = new ACLMessage();
                         mes.addReceiver(this.server);
                         mes.setConversationId("RESULT_CLIENT");
                         this.myAgent.send(mes);
                         Output("send RESULT_CLIENT");
 
-                        flag = false;
-
                         requestTimetable();
                         nextStep();
+                    }
+                    Output("Синхронизировано также " + syncGroups.size());
+                    if (syncGroups.size() >= (groups.size() - readyGroups.size())) {
+                        syncGroups.clear();
+                        allRequest("SYNC_GROUP");
+                    }
+                }
+
+                var syncRequest = this.myAgent.receive(this.syncTemplate);
+                if (syncRequest != null) {
+                    var group = syncRequest.getContent();
+                    if (syncRequest.getPerformative() == ACLMessage.AGREE) {
+                        syncGroups.add(group);
                     } else {
-                        // блок кода бесполезен
-                        try
-                        {
-                            Thread.sleep(5000);
-                        }
-                        catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
+                        syncGroups.remove(group);
+                    }
+                    Output((syncRequest.getPerformative() == ACLMessage.AGREE ? "Синхронизирован " : "Не синхронизирован ")
+                            + group + " " + syncGroups.size() + "/" + (groups.size() - readyGroups.size()));
+
+                    Output("Не синхронизированы: " + notSyncedGroup().toString());
+
+                    if (syncGroups.size() >= (groups.size() - readyGroups.size())) {
+                        syncGroups.clear();
+                        allRequest("SYNC_GROUP");
                     }
                 }
             }
@@ -194,17 +235,28 @@ class ClientBehaviour extends SimpleBehaviour {
         }
     }
 
-    void requestTimetable() {
+    ArrayList<String> notSyncedGroup() {
+        return new ArrayList(groups.stream().filter(group ->
+                !syncGroups.contains(group.name)
+        ).toList());
+    }
+
+    int allRequest(String conversation) {
         var groups = DFUtilities.searchService(this.myAgent, "group");
 
-        Output("Запрос результатов у " + groups.length + " групп");
-
         var mes = new ACLMessage();
-        mes.setConversationId("TIMETABLE_GROUP");
+        mes.setConversationId(conversation);
         for (AID group : groups) {
             mes.addReceiver(group);
         }
         this.myAgent.send(mes);
+
+        return groups.length;
+    }
+
+    void requestTimetable() {
+        var length = allRequest("TIMETABLE_GROUP");
+        Output("Запроены результатов у " + length + " групп");
     }
 
     @Override

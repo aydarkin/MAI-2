@@ -68,7 +68,7 @@ class TeacherBehaviour extends SimpleBehaviour {
         var type = Integer.parseInt(obj.get(4));
 
         // предложение
-        if (model.isBusy(day, lesson) || !model.canTeach(subject)) {
+        if (model.isBusy(day, lesson, force) || !model.canTeach(subject)) {
             print("Занято " + day + " " + lesson);
 
             myMsg.payload = model.getAvailable(force);
@@ -130,15 +130,17 @@ class TeacherBehaviour extends SimpleBehaviour {
                         // читаем день, урок
                         var myMsg = (MyMessage) mes.getContentObject();
                         var obj = (ArrayList<String>) myMsg.payload;
+                        //print("whatGroup: " + obj.toString());
+
                         var day = Integer.parseInt(obj.get(0));
                         var lesson = Integer.parseInt(obj.get(1));
 
                         var group = model.whatGroup(day,lesson);
-                        if (model.isBusy(day, lesson) && group != null) {
+                        if (model.isBusy(day, lesson) && group == null) {
                             reply.setPerformative(ACLMessage.CANCEL);
                         } else {
                             reply.setPerformative(ACLMessage.AGREE);
-                            myMsg.group = group;
+                            obj.add(group);
                         }
 
                         // обратно
@@ -178,6 +180,7 @@ class TeacherBehaviour extends SimpleBehaviour {
                             var newOccupation = model.timeTable.get(newDay).get(newLesson);
                             if (newOccupation.group == null) {
                                 newOccupation.group = group;
+                                myMsg.teacher = model.name;
                                 reply.setContentObject(myMsg);
                                 reply.setPerformative(ACLMessage.AGREE);
                             }

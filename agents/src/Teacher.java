@@ -31,6 +31,10 @@ public class Teacher {
         return this.busy.get(day).contains((long)lesson) || timeTable.get(day).get(lesson).group != null;
     }
 
+    public boolean isBusy(int day, int lesson, boolean force) {
+        return timeTable.get(day).get(lesson).group != null;
+    }
+
     public boolean hasAuditorium(int day, int lesson) {
         return timeTable.get(day).get(lesson).auditorium != null;
     }

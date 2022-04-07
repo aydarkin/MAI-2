@@ -44,6 +44,15 @@ public class StudentGroupAgent extends Agent {
         setStatuses();
     }
 
+    void setExchangeDone(boolean isReady) {
+        if (isReady) {
+            statuses.add("groupExchangeDone");
+        } else {
+            statuses.remove("groupExchangeDone");
+        }
+        setStatuses();
+    }
+
     void setStatuses() {
         var services = new ArrayList<String>();
         services.add("group");
@@ -101,58 +110,26 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                         myAgent.send(reply);
                     }
                     case "available" -> {
-                        switch (step) {
-                            case 1 -> availableTeacherHandler(mes, false);
-                            case 2 -> {
-                                // пока единый обработчик
-                                // ниже как пример
-
-                                // получили расписание для обмена
-                                var myMsg = (MyMessage) mes.getContentObject();
-                                var obj = (ArrayList<String>) myMsg.payload;
-                                if (myMsg.group != null) {
-                                    // ответ для переноса по просьбе другой группы
-                                    // transferLesson
-                                    // шлем в ответ exchange=AGREE
-                                } else {
-                                    // ответ для начала переноса
-                                    var availableInfo = (ArrayList<SimpleEntry<Integer, Integer>>) myMsg.payload;
-
-                                    // нарастить метод
-                                    var selected = getFirstIntersection(availableInfo);
-
-                                    // если есть, предложить
-                                    //
-                                }
-                            }
-                        }
+                        availableTeacherHandler(mes, false);
                     }
                     case "proposal" -> {
-                        switch (step) {
-                            case 1 -> proposalTeacherHandler(mes, false);
-                            case 2 -> {
-                                // proposalTeacherHandler возможно подойдет
-                            }
-                        }
-
+                        proposalTeacherHandler(mes, false);
                     }
                     case "availableForce" -> {
-                        if (step == 1) {
-                            availableTeacherHandler(mes, true);
-                        }
+                        availableTeacherHandler(mes, true);
                     }
                     case "proposalForce" -> {
-                        if (step == 1) {
-                            proposalTeacherHandler(mes, true);
-                        }
+                        proposalTeacherHandler(mes, true);
                     }
                     case "exchange" -> {
                         var myMsg = (MyMessage) mes.getContentObject();
-                        var obj = (ArrayList<String>) myMsg.payload;
-                        var day = Integer.parseInt(obj.get(0));
-                        var lesson = Integer.parseInt(obj.get(1));
+
                         switch (mes.getPerformative()) {
                             case ACLMessage.REQUEST -> {
+                                var obj = (ArrayList<String>) myMsg.payload;
+                                var day = Integer.parseInt(obj.get(0));
+                                var lesson = Integer.parseInt(obj.get(1));
+
                                 // получен запрос на обмен
                                 var teacher = model.timeTable.get(day).get(lesson).teacher;
                                 if (teacher != null) {
@@ -163,6 +140,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                                     msg.setContentObject(myMsg);
                                     this.myAgent.send(msg);
                                 } else {
+                                    // отвечаем отказом на обмен
                                     var reply = mes.createReply();
                                     reply.setPerformative(ACLMessage.CANCEL);
                                     this.myAgent.send(reply);
@@ -173,6 +151,9 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                                 iterationExchange();
                             }
                             case ACLMessage.CANCEL -> {
+                                var day = myMsg.targetLesson.getKey();
+                                var lesson = myMsg.targetLesson.getValue();
+
                                 // получен отрицательный ответ на запрос об обмене
                                 droppedLesson.add(new SimpleEntry<Integer, Integer>(day, lesson));
                                 iterationExchange();
@@ -186,23 +167,58 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                         var day = Integer.parseInt(obj.get(0));
                         var lesson = Integer.parseInt(obj.get(1));
                         if (mes.getPerformative() == ACLMessage.AGREE) {
-                            var groupName = myMsg.group;
+                            var groupName = obj.get(2);
+
+                            myMsg.targetLesson = new SimpleEntry<>(day, lesson);
+
+                            var groupAgent = findGroup(groupName);
+                            if (groupAgent == null) {
+                                print("Не найден " + groupName + ", данные: " + obj);
+                            }
+                            print("Шлем запрос на обмен группе " + groupName + " -> " + groupAgent.getName());
 
                             var msg = new ACLMessage();
-                            msg.addReceiver(findGroup(groupName));
+                            msg.addReceiver(groupAgent);
                             msg.setConversationId("exchange");
                             msg.setPerformative(ACLMessage.REQUEST);
                             msg.setContentObject(myMsg);
                             this.myAgent.send(msg);
                         } else {
                             // занят
+                            print("Преподаватель недоступен в пару " + day + "-" + lesson);
                             droppedLesson.add(new SimpleEntry<Integer, Integer>(day, lesson));
                             iterationExchange();
                         }
                     }
                     case "transferLesson" -> {
-                        if (step == 1) {
+                        var myMsg = (MyMessage) mes.getContentObject();
 
+                        var msg = new ACLMessage();
+                        msg.addReceiver(findGroup(myMsg.group));
+                        msg.setConversationId("exchange");
+                        if (mes.getPerformative() == ACLMessage.AGREE) {
+                            msg.setPerformative(ACLMessage.AGREE);
+                            print("Преподаватель разрешил перенос");
+
+                            var obj = (ArrayList<String>) myMsg.payload;
+                            var group = obj.get(0);
+                            var day = Integer.parseInt(obj.get(1));
+                            var lesson = Integer.parseInt(obj.get(2));
+                            var newDay = Integer.parseInt(obj.get(3));
+                            var newLesson = Integer.parseInt(obj.get(4));
+
+                            model.timeTable.get(day).get(lesson).teacher = null;
+                            model.timeTable.get(newDay).get(newLesson).teacher = myMsg.teacher;
+                        } else {
+                            print("Преподаватель не разрешил перенос, время успели занять");
+                            msg.setPerformative(ACLMessage.CANCEL);
+                        }
+                        this.myAgent.send(msg);
+                    }
+                    case "SYNC_GROUP" -> {
+                        print("!!!Синхронизировано через менеджер!!!");
+                        if (step == 2) {
+                            startForceTeacher();
                         }
                     }
                 }
@@ -232,30 +248,60 @@ class StudentGroupBehaviour extends SimpleBehaviour {
         return null;
     }
 
+    ArrayList<String> remainingGroups() {
+        var groups = DFUtilities.searchService(myAgent, "group");
+        var readies = DFUtilities.searchService(myAgent, "groupReady");
+
+        var result = new ArrayList<String>();
+        for (AID group : groups) {
+            if (Arrays.stream(readies).noneMatch(ready -> group.getName().equals(ready.getName()))) {
+                result.add(group.getName());
+            }
+        }
+        return result;
+    }
+
     void availableTeacherHandler(ACLMessage mes, boolean force) throws UnreadableException, IOException  {
         var myMsg = (MyMessage) mes.getContentObject();
         var availableInfo = (ArrayList<SimpleEntry<Integer, Integer>>) myMsg.payload;
-        var selected = getFirstIntersection(availableInfo);
+        var selected = getFirstIntersection(availableInfo, this.step == 2, force);
         var subject = getFirstRemainingLessonForTeacher();
         if (selected != null && subject.isPresent()) {
-            print("Есть пересечение " + selected.toString());
-            // шлем запрос
-            var obj = new ArrayList<String>(4);
-            obj.add(model.name);
-            obj.add(selected.getKey().toString());
-            obj.add(selected.getValue().toString());
+            if (this.step == 2 && myMsg.group != null) {
+                // ответ для переноса по просьбе другой группы
+                print("Преподаватель ответил для переноса пары, есть пересечения");
+                var obj = new ArrayList<String>(5);
+                obj.add(model.name);
+                obj.add(myMsg.targetLesson.getKey().toString()); // откуда
+                obj.add(myMsg.targetLesson.getValue().toString());
+                obj.add(selected.getKey().toString()); // куда
+                obj.add(selected.getValue().toString());
+                myMsg.payload = obj;
 
-            // первый предмет из очереди
-            obj.add(subject.get().name);
-            obj.add(Integer.toString(subject.get().type));
-            myMsg.payload = obj;
+                var msg = mes.createReply();
+                msg.setConversationId("transferLesson");
+                msg.setContentObject(myMsg);
+                this.myAgent.send(msg);
+            } else {
+                print("Есть пересечение " + selected);
+                // шлем запрос
+                var obj = new ArrayList<String>(4);
+                obj.add(model.name);
+                obj.add(selected.getKey().toString());
+                obj.add(selected.getValue().toString());
 
-            var reply = mes.createReply();
-            reply.setContentObject(myMsg);
-            reply.setConversationId(force ? "proposalForce" : "proposal");
-            myAgent.send(reply);
+                // первый предмет из очереди
+                obj.add(subject.get().name);
+                obj.add(Integer.toString(subject.get().type));
+                myMsg.payload = obj;
+
+                var reply = mes.createReply();
+                reply.setContentObject(myMsg);
+                reply.setConversationId(force ? "proposalForce" : "proposal");
+                myAgent.send(reply);
+            }
         } else if (subject.isPresent()) {
-            if (this.step == 1) {
+            if (this.step == 1 || this.step == 3) {
                 print("Нет пересечения. Спрашиваем следующего преподавателя");
                 askedTeachers.add(mes.getSender().getName());
                 var asked = askNextTeacher(subject.get().name);
@@ -266,37 +312,116 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                         print("Первичное распределение завершено");
                         print("Мне осталось: " + model.getRemainingLessonsForTeacher());
 
-                        startExchange();
+                        switch (step) {
+                            case 1 -> startExchange();
+                            case 2 -> startSync();
+                            case 3 -> setReady(true);
+                        }
 
                         // для теста первого этапа
                         //setReady(true);
                     }
                 }
             } else if (this.step == 2) {
-                print("Нет пересечения. Спрашиваем кто занял пару");
+                if (myMsg.group != null) {
+                    // Г2 спросил П2
+                    print("Преподаватель ответил для переноса пары, пересечений нет");
+                    var msg = new ACLMessage();
 
-                var msg = mes.createReply();
-                msg.setConversationId("whatGroup");
-                msg.setContentObject(myMsg);
-                this.myAgent.send(msg);
+                    msg.addReceiver(findGroup(myMsg.group));
+                    msg.setConversationId("exchange");
+                    msg.setPerformative(ACLMessage.CANCEL);
+                    msg.setContentObject(myMsg);
+                    this.myAgent.send(msg);
+                } else {
+                    // Г1 спросил П1
+                    askWhatGroup(mes, myMsg);
+                }
             }
         } else {
-            // нет больше предметов
-            print("Кончились предметы");
+            if (step == 2 && myMsg.group != null) {
+                // Г2 спросил П2
+                print("Некуда переносить");
+                var msg = new ACLMessage();
+
+                msg.addReceiver(findGroup(myMsg.group));
+                msg.setConversationId("exchange");
+                msg.setPerformative(ACLMessage.CANCEL);
+                msg.setContentObject(myMsg);
+                this.myAgent.send(msg);
+            } else {
+                // нет больше предметов
+                print("Кончились предметы");
+                switch (step) {
+                    case 1 -> startExchange();
+                    case 2 -> startSync();
+                    case 3 -> setReady(true);
+                }
+            }
+        }
+    }
+
+    void startSync() {
+        print("Синхронизация через менеджер");
+
+        var mes = new ACLMessage();
+        mes.addReceiver(client);
+        mes.setContent(model.name);
+        mes.setConversationId("SYNC_GROUP");
+        mes.setPerformative(ACLMessage.AGREE);
+        myAgent.send(mes);
+    }
+
+    void startForceTeacher() throws IOException {
+        this.step = 3;
+
+        // предметы кончились
+        askedSubjects.clear();
+        askedTeachers.clear();
+        droppedLesson.clear();
+
+        print("!!!Начало принудительного заполнения!!!");
+        var askedSubject = askNextSubject(null, true);
+        if (!askedSubject) {
+            print("Принудительное заполнение не понадобилось");
+            print("Мне осталось: " + model.getRemainingLessonsForTeacher());
+
             setReady(true);
         }
     }
 
-    void askWhatGroup() {
+    void askWhatGroup(ACLMessage mes, MyMessage myMsg) throws IOException {
+        var myAval = getAvailableForTeacherWithoutDropped();
+        if (!myAval.isEmpty()) {
+            // шлем чья группа, получим ответ в контесте
+            var obj = new ArrayList<String>(2);
+            obj.add(myAval.get(0).getKey().toString());
+            obj.add(myAval.get(0).getValue().toString());
+            myMsg.payload = obj;
+            myMsg.group = model.name;
 
+            var msg = mes.createReply();
+            msg.setConversationId("whatGroup");
+            msg.setContentObject(myMsg);
+            this.myAgent.send(msg);
+        } else {
+            // нет больше предметов
+            print("Кончились пары для обмена");
+
+            if (step == 2) {
+                startSync();
+            } else if (step == 4) {
+                //startForceAuditorium();
+            }
+        }
     }
 
     void proposalTeacherHandler(ACLMessage mes, boolean force) throws IOException, UnreadableException {
         var performative = mes.getPerformative();
+        var myMsg = (MyMessage) mes.getContentObject();
         if (performative == ACLMessage.AGREE) {
             // преподаватель установлен
             // читаем группу, день, урок
-            var myMsg = (MyMessage) mes.getContentObject();
             var obj = (ArrayList<String>) myMsg.payload;
             var teacher = obj.get(0);
             var day = Integer.parseInt(obj.get(1));
@@ -309,25 +434,35 @@ class StudentGroupBehaviour extends SimpleBehaviour {
             model.timeTable.get(day).get(lesson).subject = subject;
             model.timeTable.get(day).get(lesson).type = type;
 
-            if (step == 1) {
+            if (step == 1 || this.step == 3) {
                 // спрашиваем дальше
                 var askedSubject = askNextSubject(null);
+                // иначе
                 if (!askedSubject) {
                     print("Первичное распределение завершено после очередного заполнения");
                     print("Мне осталось: " + model.getRemainingLessonsForTeacher());
 
-                    // начинаем обмен
-                    startExchange();
+                    switch (step) {
+                        case 1 -> startExchange();
+                        case 3 -> setReady(true);
+                    }
 
                     // для теста первого этапа
                     // setReady(true);
                 }
+            } else if (step == 2) {
+                iterationExchange();
             }
-
         } else {
-            if (step == 1) {
+            if (step == 1 || this.step == 3) {
                 // повторяем предложение
                 availableTeacherHandler(mes, force);
+            } else if (step == 2) {
+                // спрашиваем кто
+                var msg = mes.createReply();
+                msg.setConversationId("whatGroup");
+                msg.setContentObject(myMsg);
+                this.myAgent.send(msg);
             }
         }
     }
@@ -381,12 +516,19 @@ class StudentGroupBehaviour extends SimpleBehaviour {
             } else {
                 print("Обмен не продолжился, свободных занятий нет");
 
-                // todo на след этап
-                setReady(true);
+                if (step == 2) {
+                    startSync();
+                } else if (step == 4) {
+                    //startForceAuditorium();
+                }
             }
         } else {
             print("Обмен не продолжился, предметы все заполнены");
-            setReady(true);
+            if (step == 2) {
+                startSync();
+            } else if (step == 4) {
+                //startForceAuditorium();
+            }
         }
     }
 
@@ -406,14 +548,10 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                 .findFirst();
     }
 
-    SimpleEntry<Integer, Integer> getFirstIntersection(ArrayList<SimpleEntry<Integer, Integer>> availableInfo) {
-        return getFirstIntersection(availableInfo, false);
-    }
-
-    SimpleEntry<Integer, Integer> getFirstIntersection(ArrayList<SimpleEntry<Integer, Integer>> availableInfo, boolean withDropped) {
-        var myAvailable = withDropped
+    SimpleEntry<Integer, Integer> getFirstIntersection(ArrayList<SimpleEntry<Integer, Integer>> availableInfo, boolean withoutDropped, boolean force) {
+        var myAvailable = withoutDropped
                 ? getAvailableForTeacherWithoutDropped()
-                : model.getAvailableForTeacher();
+                : model.getAvailableForTeacher(force);
 
         for (var myAval : myAvailable) {
             var isContain = availableInfo.stream().anyMatch(teacherAval -> {
@@ -433,12 +571,13 @@ class StudentGroupBehaviour extends SimpleBehaviour {
 
     ArrayList<SimpleEntry<Integer, Integer>> getAvailableForTeacherWithoutDropped(boolean force) {
         var myAvailable = model.getAvailableForTeacher(force);
-        return new ArrayList((Collection) myAvailable.stream().filter(myAval ->
+
+        return new ArrayList(myAvailable.stream().filter(myAval ->
                 droppedLesson.stream().noneMatch(dropped -> {
                     return Objects.equals(myAval.getKey(), dropped.getKey())
                             && Objects.equals(myAval.getValue(), dropped.getValue());
                 })
-        ));
+        ).toList());
     }
 
     boolean askNextTeacher(String subject) throws IOException {
@@ -484,11 +623,29 @@ class StudentGroupBehaviour extends SimpleBehaviour {
 
     // флаг готовности средствами желтых страниц
     void setReady(boolean isReady) {
-        ((StudentGroupAgent)myAgent).setReady(isReady);
+        //((StudentGroupAgent)myAgent).setReady(isReady);
+
+        var mes = new ACLMessage();
+        mes.addReceiver(client);
+        mes.setContent(model.name);
+        mes.setConversationId("READY_GROUP");
+        if (isReady) {
+            print("Мне осталось: " + model.getRemainingLessonsForTeacher());
+            // print("Еще активны: " + remainingGroups().toString());
+
+            mes.setPerformative(ACLMessage.AGREE);
+        } else {
+            mes.setPerformative(ACLMessage.CANCEL);
+        }
+        myAgent.send(mes);
     }
 
     void setExchangeReady(boolean isReady) {
         ((StudentGroupAgent)myAgent).setExchangeReady(isReady);
+    }
+
+    void setExchangeDone(boolean isReady) {
+        ((StudentGroupAgent)myAgent).setExchangeDone(isReady);
     }
 
     @Override

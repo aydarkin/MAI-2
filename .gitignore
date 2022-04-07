@@ -3,3 +3,5 @@ out
 
 agents/class
 agents/*.txt
+agents/files/output.json
+agents/files/serverOutput.json

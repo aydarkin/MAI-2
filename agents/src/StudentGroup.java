@@ -46,14 +46,6 @@ public class StudentGroup {
     public ArrayList<SimpleEntry<Integer, Integer>> getAvailableForTeacher(boolean force) {
         var items = new ArrayList<SimpleEntry<Integer, Integer>>();
 
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (timeTable.get(i).get(j).teacher == null) {
-                    items.add(new SimpleEntry<Integer, Integer>(i, j));
-                }
-            }
-        }
-
         // если нужны 5-8 пары
         if (force) {
             for (int i = 0; i < 6; i++) {
@@ -61,6 +53,14 @@ public class StudentGroup {
                     if (timeTable.get(i).get(j).teacher == null) {
                         items.add(new SimpleEntry<Integer, Integer>(i, j));
                     }
+                }
+            }
+        }
+
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (timeTable.get(i).get(j).teacher == null) {
+                    items.add(new SimpleEntry<Integer, Integer>(i, j));
                 }
             }
         }

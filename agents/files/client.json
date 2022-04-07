@@ -1,515 +1,849 @@
 [
-    {
-        "name": "МО-417",
-        "students": 25,
-        "subjects": [
-            {
-                "name": "Программирование",
-                "lections": 4,
-                "practics": 2 
-            },
-            {
-                "name": "Математический анализ",
-                "lections": 3,
-                "practics": 4 
-            },
-            {
-                "name": "Алгебра",
-                "lections": 4,
-                "practics": 2 
-            },
-            {
-                "name": "Теория информации",
-                "lections": 3,
-                "practics": 1 
-            }
-        ]
-    },
-    {
-        "name": "МО-418",
-        "students": 25,
-        "subjects": [
-            {
-                "name": "Программирование",
-                "lections": 4,
-                "practics": 2 
-            },
-            {
-                "name": "Математический анализ",
-                "lections": 3,
-                "practics": 4 
-            },
-            {
-                "name": "Алгебра",
-                "lections": 4,
-                "practics": 2 
-            },
-            {
-                "name": "Теория информации",
-                "lections": 3,
-                "practics": 1 
-            }
-        ]
-    },
-    {
-        "name": "ПИ-444",
-        "students": 25,
-        "subjects": [
-            {
-                "name": "Программирование",
-                "lections": 2,
-                "practics": 2 
-            },
-            {
-                "name": "Информатика",
-                "lections": 3,
-                "practics": 1 
-            },
-            {
-                "name": "Алгебра",
-                "lections": 2,
-                "practics": 2 
-            },
-            {
-                "name": "Математический анализ",
-                "lections": 2,
-                "practics": 4 
-            },
-            {
-                "name": "Компьютерная этика",
-                "lections": 2,
-                "practics": 2 
-            },
-            {
-                "name": "Теория информации",
-                "lections": 2,
-                "practics": 2 
-            }
-        ]
-    },
-    {
-        "name": "ИВТ-420",
-        "students": 23,
-        "subjects": [
-            {
-                "name": "Сетевые технологии",
-                "lections": 3,
-                "practics": 2 
-            },
-            {
-                "name": "АИС в производстве",
-                "lections": 2,
-                "practics": 4 
-            },
-            {
-                "name": "Надежность, эргономика и качество АСОИУ",
-                "lections": 2,
-                "practics": 2 
-            },
-            {
-                "name": "Корпоративные информационные системы",
-                "lections": 1,
-                "practics": 2 
-            },
-            {
-                "name": "Системы высокопроизводительных вычислений",
-                "lections": 2,
-                "practics": 1 
-            },
-            {
-                "name": "Комплексная оценка экономического эффекта при разработке АИС",
-                "lections": 1,
-                "practics": 2 
-            }
-        ]
-    },
-    {
-        "name": "ИВТ-321",
-        "students": 22,
-        "subjects": [
-            {
-                "name": "Программно-аппаратные комплексы",
-                "lections": 2,
-                "practics": 3 
-            },
-            {
-                "name": "Методы искусственного интеллекта",
-                "lections": 2,
-                "practics": 3 
-            },
-            {
-                "name": "Сетевые технологии",
-                "lections": 1,
-                "practics": 2 
-            },
-            {
-                "name": "Схемотехника ЭВМ",
-                "lections": 2,
-                "practics": 4 
-            },
-            {
-                "name": "Всеобщее управление качеством",
-                "lections": 2,
-                "practics": 3 
-            }
-        ]
-    },
-    {
-        "name": "ИВТ-222",
-        "students": 21,
-        "subjects": [
-            {
-                "name": "Вычислительная математика",
-                "lections": 1,
-                "practics": 3 
-            },
-            {
-                "name": "Объектно-ориентированное моделирование",
-                "lections": 1,
-                "practics": 4 
-            },
-            {
-                "name": "Инженерная и компьютерная графика",
-                "lections": 2,
-                "practics": 1 
-            },
-            {
-                "name": "Методы оптимизации",
-                "lections": 2,
-                "practics": 2 
-            },
-            {
-                "name": "Скриптовые языки программирования",
-                "lections": 3,
-                "practics": 5 
-            }
-        ]
-    },
-    {
-        "name": "ИВТ-127",
-        "students": 27,
-        "subjects": [
-            {
-                "name": "Математический анализ (ИВТ)",
-                "lections": 5,
-                "practics": 5 
-            },
-            {
-                "name": "Теории алгоритмов и представления информации",
-                "lections": 2,
-                "practics": 3 
-            },
-            {
-                "name": "Средства ВТ",
-                "lections": 2,
-                "practics": 2 
-            },
-            {
-                "name": "Микропроцессоры и микропроцессорные системы",
-                "lections": 3,
-                "practics": 2
-            }
-        ]
-    },
-    {
-        "name": "ИВТ-128",
-        "students": 29,
-        "subjects": [
-            {
-                "name": "Математический анализ (ИВТ)",
-                "lections": 5,
-                "practics": 5 
-            },
-            {
-                "name": "Теории алгоритмов и представления информации",
-                "lections": 2,
-                "practics": 2 
-            },
-            {
-                "name": "Дискретная математика",
-                "lections": 5,
-                "practics": 5
-            }
-        ]
-    },
-    {
-        "name": "ПРО-421",
-        "students": 28,
-        "subjects": [
-          {
-            "name": "Бизнес-планирование",
-            "lections": 3,
-            "practics": 3
-          },
-          {
-            "name": "Web-технологии",
-            "lections": 4,
-            "practics": 3
-          },
-          {
-            "name": "Теория принятия решений",
-            "lections": 3,
-            "practics": 5
-          },
-          {
-            "name": "ИАД",
-            "practics": 3,
-            "lections": 2
-          }
-        ]
+  {
+    "name": "МО-417",
+    "students": 25,
+    "subjects": [
+      {
+        "name": "Программирование",
+        "lections": 2,
+        "practics": 2
       },
       {
-        "name": "ПРО-324",
-        "students": 20,
-        "subjects": [
-          {
-            "name": "Теория вычислительных процессов и структур",
-            "lections": 1,
-            "practics": 5
-          },
-          {
-            "name": "Проектирование человеко-машинного интерфейса",
-            "lections": 2,
-            "practics": 4
-          },
-          {
-            "name": "Управление программными проектами",
-            "lections": 5,
-            "practics": 1
-          },
-          {
-            "name": "Компьютерное моделирование",
-            "lections": 3,
-            "practics": 3
-          }
-        ]
+        "name": "Математический анализ",
+        "lections": 2,
+        "practics": 2
       },
       {
-        "name": "ПРО-322",
-        "students": 29,
-        "subjects": [
-          {
-            "name": "Проектирование человеко-машинного интерфейса",
-            "lections": 2,
-            "practics": 4
-          },
-          {
-            "name": "Системы автоматизированного проектирования",
-            "lections": 2,
-            "practics": 2
-          },
-          {
-            "name": "Методы анализа больших данных",
-            "lections": 1,
-            "practics": 2
-          },
-          {
-            "name": "Обеспечение качества и тестирование программного обеспечения",
-            "lections": 2,
-            "practics": 3
-          },
-          {
-            "name": "Компьютерная обработка экспериментальных данных",
-            "lections": 2,
-            "practics": 4
-          }
-        ]
+        "name": "Алгебра",
+        "lections": 2,
+        "practics": 2
       },
       {
-        "name": "ПРО-229",
-        "students": 18,
-        "subjects": [
-          {
-            "name": "Функциональное программирование",
-            "lections": 4,
-            "practics": 3
-          },
-          {
-            "name": "Искусственный интеллект и машинное обучение",
-            "lections": 3,
-            "practics": 5
-          },
-          {
-            "name": "Теория автоматов и формальных языков",
-            "lections": 2,
-            "practics": 2
-          },
-          {
-            "name": "Логическое программирование",
-            "lections": 2,
-            "practics": 3
-          }
-        ]
+        "name": "Теория информации",
+        "lections": 2,
+        "practics": 2
       },
       {
-        "name": "ПРО-131",
-        "students": 22,
-        "subjects": [
-          {
-            "name": "Философия",
-            "lections": 5,
-            "practics": 2
-          },
-          {
-            "name": "Экономика программной инженерии",
-            "lections": 3,
-            "practics": 2
-          },
-          {
-            "name": "Дискретная математика",
-            "lections": 3,
-            "practics": 4
-          },
-          {
-            "name": "Безопасность жизнедеятельности",
-            "practics": 3,
-            "lections": 5
-          },
-          {
-            "name": "Архитектура ЭВМ",
-            "lections": 1,
-            "practics": 3
-          }
-        ]
+        "name": "Метрология и качество программного обеспечения",
+        "lections": 2,
+        "practics": 1
       },
       {
-        "name": "ПИ-420",
-        "students": 21,
-        "subjects": [
-          {
-            "name": "Корпоративные информационные системы",
-            "lections": 2,
-            "practics": 3
-          },
-          {
-            "name": "Проектный практикум",
-            "lections": 1,
-            "practics": 5
-          },
-          {
-            "name": "Информационные системы управления документооборотом",
-            "lections": 2,
-            "practics": 4
-          },
-          {
-            "name": "Оценка экономического эффекта при разработке информационных систем",
-            "lections": 1,
-            "practics": 5
-          }
-        ]
-      },
-      {
-        "name": "ПИ-419",
-        "students": 18,
-        "subjects": [
-          {
-            "name": "Зельеваренье",
-            "lections": 2,
-            "practics": 4
-          },
-          {
-            "name": "Абракадабарские науки",
-            "lections": 2,
-            "practics": 3
-          },
-          {
-            "name": "Книгообзирание",
-            "lections": 1,
-            "practics": 3
-          },
-          {
-            "name": "Цветонюханье",
-            "lections": 1,
-            "practics": 2
-          },
-          {
-            "name": "Практикум",
-            "lections": 1,
-            "practics": 3
-          }
-        ]
-      },
-      {
-        "name": "ПИ-418",
-        "students": 23,
-        "subjects": [
-          {
-            "name": "Флористика",
-            "lections": 2,
-            "practics": 4
-          },
-          {
-            "name": "Рисование",
-            "lections": 3,
-            "practics": 5
-          },
-          {
-            "name": "Музицирование",
-            "lections": 2,
-            "practics": 5
-          }
-        ]
-      },
-      {
-        "name": "ПИ-417",
-        "students": 23,
-        "subjects": [
-          {
-            "name": "География",
-            "lections": 4,
-            "practics": 2
-          },
-          {
-            "name": "Снежинковырезание",
-            "lections": 0,
-            "practics": 3
-          },
-          {
-            "name": "Музицирование",
-            "lections": 0,
-            "practics": 5
-          },
-          {
-            "name": "Дизайн",
-            "lections": 0,
-            "practics": 5
-          },
-          {
-            "name": "Флористика",
-            "lections": 1,
-            "practics": 3
-          }
-        ]
-      },
-      {
-        "name": "ПИ-416",
-        "students": 22,
-        "subjects": [
-          {
-            "name": "Математика",
-            "lections": 2,
-            "practics": 3
-          },
-          {
-            "name": "Английский язык",
-            "lections": 0,
-            "practics": 5
-          },
-          {
-            "name": "География",
-            "lections": 2,
-            "practics": 3
-          },
-          {
-            "name": "Дизайн",
-            "lections": 0,
-            "practics": 4
-          },
-          {
-            "name": "Музицирование",
-            "lections": 1,
-            "practics": 3
-          }
-        ]
+        "name": "Компьютерные технологии в науке и образовании",
+        "lections": 2,
+        "practics": 1
       }
+    ]
+  },
+  {
+    "name": "ИВТ-420",
+    "students": 23,
+    "subjects": [
+      {
+        "name": "Сетевые технологии",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "АИС в производстве",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Надежность, эргономика и качество АСОИУ",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Корпоративные информационные системы",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Системы высокопроизводительных вычислений",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Комплексная оценка экономического эффекта при разработке АИС",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Физика",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ИВТ-321",
+    "students": 22,
+    "subjects": [
+      {
+        "name": "Программно-аппаратные комплексы",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Методы искусственного интеллекта",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Сетевые технологии",
+        "lections": 3,
+        "practics": 1
+      },
+      {
+        "name": "Схемотехника ЭВМ",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Всеобщее управление качеством",
+        "lections": 2,
+        "practics": 3
+      },
+      {
+        "name": "Физика",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ИВТ-323",
+    "students": 22,
+    "subjects": [
+      {
+        "name": "Проектирование и эксплуатация АСУТП",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Методы искусственного интеллекта",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Сетевые технологии",
+        "lections": 3,
+        "practics": 1
+      },
+      {
+        "name": "Схемотехника ЭВМ",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Всеобщее управление качеством",
+        "lections": 2,
+        "practics": 3
+      },
+      {
+        "name": "Правовые основы ИС",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ИВТ-222",
+    "students": 21,
+    "subjects": [
+      {
+        "name": "Вычислительная математика",
+        "lections": 1,
+        "practics": 3
+      },
+      {
+        "name": "Объектно-ориентированное моделирование",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Инженерная и компьютерная графика",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Методы оптимизации",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Скриптовые языки программирования",
+        "lections": 3,
+        "practics": 2
+      },
+      {
+        "name": "Иностранный язык в профессиональной деятельности",
+        "lections": 2,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ИВТ-224",
+    "students": 21,
+    "subjects": [
+      {
+        "name": "Социология",
+        "lections": 1,
+        "practics": 3
+      },
+      {
+        "name": "Основы информационной безопасности",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Криптографические методы защиты информации",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Методы оптимизации",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Скриптовые языки программирования",
+        "lections": 3,
+        "practics": 2
+      },
+      {
+        "name": "Иностранный язык в профессиональной деятельности",
+        "lections": 2,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ИВТ-127",
+    "students": 27,
+    "subjects": [
+      {
+        "name": "Математический анализ",
+        "lections": 3,
+        "practics": 3
+      },
+      {
+        "name": "Теории алгоритмов и представления информации",
+        "lections": 2,
+        "practics": 3
+      },
+      {
+        "name": "Средства ВТ",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Микропроцессоры и микропроцессорные системы",
+        "lections": 3,
+        "practics": 2
+      },
+      {
+        "name": "Объектно-ориентированное моделирование",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ИВТ-128",
+    "students": 29,
+    "subjects": [
+      {
+        "name": "Математический анализ",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Теории алгоритмов и представления информации",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Методы оптимизации",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Вычислительная математика",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Основы промышленного программирования",
+        "lections": 2,
+        "practics": 2
+      }
+    ]
+  },
+  {
+    "name": "ПИ-420",
+    "students": 21,
+    "subjects": [
+      {
+        "name": "Корпоративные информационные системы",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Проектный практикум",
+        "lections": 1,
+        "practics": 3
+      },
+      {
+        "name": "Информационные системы управления документооборотом",
+        "lections": 2,
+        "practics": 4
+      },
+      {
+        "name": "Оценка экономического эффекта при разработке информационных систем",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Книгочтение",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Зельеваренье",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ПИ-419",
+    "students": 18,
+    "subjects": [
+      {
+        "name": "Зельеваренье",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Абракадабарские науки",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Книгообзирание",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Цветонюханье",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Практикум",
+        "lections": 1,
+        "practics": 3
+      },
+      {
+        "name": "Книгочтение",
+        "lections": 1,
+        "practics": 2
+      }
+    ]
+  },
+  {
+    "name": "ПИ-418",
+    "students": 23,
+    "subjects": [
+      {
+        "name": "Флористика",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Рисование",
+        "lections": 3,
+        "practics": 3
+      },
+      {
+        "name": "Корпоративные информационные системы",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Книгочтение",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Часоделье",
+        "lections": 1,
+        "practics": 1
+      },
+      {
+        "name": "География",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ПИ-417",
+    "students": 23,
+    "subjects": [
+      {
+        "name": "География",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Снежинковырезание",
+        "lections": 0,
+        "practics": 3
+      },
+      {
+        "name": "Музицирование",
+        "lections": 0,
+        "practics": 2
+      },
+      {
+        "name": "Дизайн",
+        "lections": 0,
+        "practics": 2
+      },
+      {
+        "name": "Флористика",
+        "lections": 1,
+        "practics": 3
+      },
+      {
+        "name": "Часоделье",
+        "lections": 1,
+        "practics": 1
+      },
+      {
+        "name": "Английский язык",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Математика",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ПИ-416",
+    "students": 22,
+    "subjects": [
+      {
+        "name": "Математика",
+        "lections": 2,
+        "practics": 3
+      },
+      {
+        "name": "Английский язык",
+        "lections": 0,
+        "practics": 2
+      },
+      {
+        "name": "География",
+        "lections": 2,
+        "practics": 3
+      },
+      {
+        "name": "Дизайн",
+        "lections": 0,
+        "practics": 2
+      },
+      {
+        "name": "Музицирование",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Рукописанье",
+        "lections": 1,
+        "practics": 1
+      },
+      {
+        "name": "Часоделье",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ПИ-415",
+    "students": 25,
+    "subjects": [
+      {
+        "name": "Абракадабарские науки",
+        "lections": 2,
+        "practics": 3
+      },
+      {
+        "name": "Английский язык",
+        "lections": 0,
+        "practics": 2
+      },
+      {
+        "name": "Риски-ириски",
+        "lections": 2,
+        "practics": 3
+      },
+      {
+        "name": "Книгообзирание",
+        "lections": 0,
+        "practics": 2
+      },
+      {
+        "name": "Зельеваренье",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Практикум",
+        "lections": 1,
+        "practics": 1
+      },
+      {
+        "name": "Цветонюханье",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ПИ-414",
+    "students": 20,
+    "subjects": [
+      {
+        "name": "Рукописанье",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "География",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Музицирование",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Снежинковырезание",
+        "lections": 0,
+        "practics": 2
+      },
+      {
+        "name": "Риски-ириски",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Математика",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Часоделье",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ПРО-421",
+    "students": 28,
+    "subjects": [
+      {
+        "name": "Бизнес-планирование",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Web-технологии",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Теория принятия решений",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "ИАД",
+        "lections": 0,
+        "practics": 3
+      },
+      {
+        "name": "Теория вычислительных процессов и структур",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Методы анализа больших данных",
+        "lections": 1,
+        "practics": 1
+      },
+      {
+        "name": "Физра",
+        "lections": 0,
+        "practics": 3
+      }
+    ]
+  },
+  {
+    "name": "ПРО-420",
+    "students": 23,
+    "subjects": [
+      {
+        "name": "Бизнес-планирование",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Web-технологии",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Теория принятия решений",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "ИАД",
+        "lections": 0,
+        "practics": 3
+      },
+      {
+        "name": "Теория вычислительных процессов и структур",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Методы анализа больших данных",
+        "lections": 1,
+        "practics": 1
+      },
+      {
+        "name": "Фитнес",
+        "lections": 0,
+        "practics": 3
+      }
+    ]
+  },
+  {
+    "name": "ПРО-324",
+    "students": 20,
+    "subjects": [
+      {
+        "name": "Теория вычислительных процессов и структур",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Проектирование человеко-машинного интерфейса",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Управление программными проектами",
+        "lections": 0,
+        "practics": 3
+      },
+      {
+        "name": "Компьютерное моделирование",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "ИАД",
+        "lections": 0,
+        "practics": 3
+      },
+      {
+        "name": "ERP- системы",
+        "lections": 0,
+        "practics": 2
+      },
+      {
+        "name": "Обеспечение качества и тестирование программного обеспечения",
+        "lections": 2,
+        "practics": 2
+      }
+    ]
+  },
+  {
+    "name": "ПРО-322",
+    "students": 29,
+    "subjects": [
+      {
+        "name": "Проектирование человеко-машинного интерфейса",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Системы автоматизированного проектирования",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Методы анализа больших данных",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Обеспечение качества и тестирование программного обеспечения",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Компьютерная обработка экспериментальных данных",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Управление программными проектами",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Культурология и культура речи",
+        "lections": 1,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ПРО-229",
+    "students": 18,
+    "subjects": [
+      {
+        "name": "Функциональное программирование",
+        "lections": 1,
+        "practics": 1
+      },
+      {
+        "name": "Искусственный интеллект и машинное обучение",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Теория автоматов и формальных языков",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Логическое программирование",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Цифровые устройства и микропроцессоры",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Инженерная подграфика",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Введение в профессиональную деятельность",
+        "lections": 2,
+        "practics": 2
+      }
+    ]
+  },
+  {
+    "name": "ПРО-131",
+    "students": 22,
+    "subjects": [
+      {
+        "name": "Философия",
+        "lections": 3,
+        "practics": 0
+      },
+      {
+        "name": "Экономика программной инженерии",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Дискретная математика",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Безопасность жизнедеятельности",
+        "lections": 0,
+        "practics": 3
+      },
+      {
+        "name": "Архитектура ЭВМ",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Правоведение",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Педагогика и психология",
+        "lections": 3,
+        "practics": 1
+      }
+    ]
+  },
+  {
+    "name": "ПРО-132",
+    "students": 24,
+    "subjects": [
+      {
+        "name": "Философия",
+        "lections": 3,
+        "practics": 0
+      },
+      {
+        "name": "Экономика программной инженерии",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Дискретная математика",
+        "lections": 1,
+        "practics": 2
+      },
+      {
+        "name": "Безопасность жизнедеятельности",
+        "lections": 0,
+        "practics": 3
+      },
+      {
+        "name": "Средства ТБВ",
+        "lections": 2,
+        "practics": 2
+      },
+      {
+        "name": "Русский язык",
+        "lections": 2,
+        "practics": 1
+      },
+      {
+        "name": "Программирование и основы алгоритмизации",
+        "lections": 2,
+        "practics": 1
+      }
+    ]
+  }
 ]
