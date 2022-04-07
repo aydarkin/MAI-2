@@ -1,0 +1,5 @@
+.idea
+out
+
+agents/class
+agents/*.txt
