@@ -35,11 +35,11 @@ public class StudentGroupAgent extends Agent {
         setStatuses();
     }
 
-    void setExchangeReady(boolean isReady) {
+    void setExchangeReady(boolean isReady, String postfix) {
         if (isReady) {
-            statuses.add("groupExchangeReady");
+            statuses.add("groupExchangeReady" + postfix);
         } else {
-            statuses.remove("groupExchangeReady");
+            statuses.remove("groupExchangeReady" + postfix);
         }
         setStatuses();
     }
@@ -68,7 +68,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
     public AID client;
     public int step = 1;
 
-    ArrayList<String> askedTeachers = new ArrayList<String>();
+    ArrayList<String> askedTeachersAuditoriums = new ArrayList<String>();
     ArrayList<String> askedSubjects = new ArrayList<String>();
     ArrayList<String> askedAuditorium = new ArrayList<String>();
 
@@ -88,7 +88,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
     }
 
     private void print(String message) {
-        System.out.println(this.myAgent.getLocalName() + ": " + message);
+        System.out.println(this.myAgent.getLocalName() + "[" + this.step + "]: " + message);
     }
 
 
@@ -110,16 +110,16 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                         myAgent.send(reply);
                     }
                     case "available" -> {
-                        availableTeacherHandler(mes, false);
+                        availableHandler(mes, false);
                     }
                     case "proposal" -> {
-                        proposalTeacherHandler(mes, false);
+                        proposalHandler(mes, false);
                     }
                     case "availableForce" -> {
-                        availableTeacherHandler(mes, true);
+                        availableHandler(mes, true);
                     }
                     case "proposalForce" -> {
-                        proposalTeacherHandler(mes, true);
+                        proposalHandler(mes, true);
                     }
                     case "exchange" -> {
                         var myMsg = (MyMessage) mes.getContentObject();
@@ -131,11 +131,17 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                                 var lesson = Integer.parseInt(obj.get(1));
 
                                 // получен запрос на обмен
-                                var teacher = model.timeTable.get(day).get(lesson).teacher;
-                                if (teacher != null) {
+                                var teacherOrAuditorium = step <= 3
+                                        ? model.timeTable.get(day).get(lesson).teacher
+                                        : model.timeTable.get(day).get(lesson).auditorium;
+                                if (teacherOrAuditorium != null) {
                                     // спрашиваем расписание
                                     var msg = new ACLMessage();
-                                    msg.addReceiver(findTeacher(teacher));
+
+                                    msg.addReceiver(step <= 3
+                                            ? findTeacher(teacherOrAuditorium)
+                                            : findAuditorium(teacherOrAuditorium));
+
                                     msg.setConversationId("available");
                                     msg.setContentObject(myMsg);
                                     this.myAgent.send(msg);
@@ -185,7 +191,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                             this.myAgent.send(msg);
                         } else {
                             // занят
-                            print("Преподаватель недоступен в пару " + day + "-" + lesson);
+                            print((step <= 3 ? "Преподаватель" : "Аудитория") + " недоступен в пару " + day + "-" + lesson);
                             droppedLesson.add(new SimpleEntry<Integer, Integer>(day, lesson));
                             iterationExchange();
                         }
@@ -198,7 +204,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                         msg.setConversationId("exchange");
                         if (mes.getPerformative() == ACLMessage.AGREE) {
                             msg.setPerformative(ACLMessage.AGREE);
-                            print("Преподаватель разрешил перенос");
+                            print((step <= 3 ? "Преподаватель" : "Аудитория") + " разрешил перенос");
 
                             var obj = (ArrayList<String>) myMsg.payload;
                             var group = obj.get(0);
@@ -207,18 +213,26 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                             var newDay = Integer.parseInt(obj.get(3));
                             var newLesson = Integer.parseInt(obj.get(4));
 
-                            model.timeTable.get(day).get(lesson).teacher = null;
-                            model.timeTable.get(newDay).get(newLesson).teacher = myMsg.teacher;
+                            if (step <= 3) {
+                                model.timeTable.get(day).get(lesson).teacher = null;
+                                model.timeTable.get(newDay).get(newLesson).teacher = myMsg.teacherOrAuditorium;
+                            } else {
+                                model.timeTable.get(day).get(lesson).auditorium = null;
+                                model.timeTable.get(newDay).get(newLesson).auditorium = myMsg.teacherOrAuditorium;
+                            }
                         } else {
-                            print("Преподаватель не разрешил перенос, время успели занять");
+                            print((step <= 3 ? "Преподаватель" : "Аудитория") + " не разрешил перенос, время успели занять");
                             msg.setPerformative(ACLMessage.CANCEL);
                         }
                         this.myAgent.send(msg);
                     }
                     case "SYNC_GROUP" -> {
                         print("!!!Синхронизировано через менеджер!!!");
-                        if (step == 2) {
-                            startForceTeacher();
+                        // запуск принудительного заполнения
+                        if (step == 2 || step == 5) {
+                            startForce();
+                        } else if (step == 3){
+                            startAuditorium();
                         }
                     }
                 }
@@ -231,7 +245,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
     AID findGroup(String name) {
         var groups = DFUtilities.searchService(myAgent, "group");
         for (AID group : groups) {
-            if (group.getName().contains(name)) {
+            if (group.getName().split("@")[0].equals(name)) {
                 return group;
             }
         }
@@ -241,8 +255,18 @@ class StudentGroupBehaviour extends SimpleBehaviour {
     AID findTeacher(String name) {
         var teachers = DFUtilities.searchService(myAgent, "teacher");
         for (AID teacher : teachers) {
-            if (teacher.getName().contains(name)) {
+            if (teacher.getName().split("@")[0].equals(name)) {
                 return teacher;
+            }
+        }
+        return null;
+    }
+
+    AID findAuditorium(String name) {
+        var auditoriums = DFUtilities.searchService(myAgent, "auditorium");
+        for (AID auditorium : auditoriums) {
+            if (auditorium.getName().split("@")[0].equals(name)) {
+                return auditorium;
             }
         }
         return null;
@@ -261,15 +285,15 @@ class StudentGroupBehaviour extends SimpleBehaviour {
         return result;
     }
 
-    void availableTeacherHandler(ACLMessage mes, boolean force) throws UnreadableException, IOException  {
+    void availableHandler(ACLMessage mes, boolean force) throws UnreadableException, IOException  {
         var myMsg = (MyMessage) mes.getContentObject();
         var availableInfo = (ArrayList<SimpleEntry<Integer, Integer>>) myMsg.payload;
-        var selected = getFirstIntersection(availableInfo, this.step == 2, force);
-        var subject = getFirstRemainingLessonForTeacher();
+        var selected = getFirstIntersection(availableInfo, step == 2 || step == 5, force);
+        var subject = getFirstRemainingLesson();
         if (selected != null && subject.isPresent()) {
-            if (this.step == 2 && myMsg.group != null) {
+            if ((this.step == 2 || step == 5) && myMsg.group != null) {
                 // ответ для переноса по просьбе другой группы
-                print("Преподаватель ответил для переноса пары, есть пересечения");
+                print((step <= 3 ? "Преподаватель" : "Аудитория") + " ответил для переноса пары, есть пересечения");
                 var obj = new ArrayList<String>(5);
                 obj.add(model.name);
                 obj.add(myMsg.targetLesson.getKey().toString()); // откуда
@@ -301,28 +325,29 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                 myAgent.send(reply);
             }
         } else if (subject.isPresent()) {
-            if (this.step == 1 || this.step == 3) {
-                print("Нет пересечения. Спрашиваем следующего преподавателя");
-                askedTeachers.add(mes.getSender().getName());
-                var asked = askNextTeacher(subject.get().name);
+            if (this.step == 1 || this.step == 3 || this.step == 4 || this.step == 6) {
+                print("Нет пересечения. Спрашиваем следующего " + (step <= 3 ? "преподавателя" : "аудиторию"));
+                askedTeachersAuditoriums.add(mes.getSender().getName());
+                var asked = step <= 3
+                        ? askNextTeacher(subject.get(), force)
+                        : askNextAuditorium(subject.get(), force);
                 if (!asked) {
-                    print("Преподаватели кончились. Спрашиваем следующий предмет");
-                    var askedSubject = askNextSubject(subject.get().name);
+                    print((step <= 3 ? "Преподаватели" : "Аудитории") + " кончились. Спрашиваем следующий предмет");
+                    var askedSubject = askNextSubject(subject.get(), force);
                     if (!askedSubject) {
                         print("Первичное распределение завершено");
-                        print("Мне осталось: " + model.getRemainingLessonsForTeacher());
+                        print("Мне осталось: " + (step <= 3
+                                ? model.getRemainingLessonsForTeacher()
+                                : model.getRemainingLessonsForAuditorium()));
 
                         switch (step) {
-                            case 1 -> startExchange();
-                            case 2 -> startSync();
-                            case 3 -> setReady(true);
+                            case 1, 4 -> startExchange();
+                            case 2, 3, 5 -> startSync();
+                            case 6 -> setReady(true);
                         }
-
-                        // для теста первого этапа
-                        //setReady(true);
                     }
                 }
-            } else if (this.step == 2) {
+            } else if (this.step == 2 || this.step == 5) {
                 if (myMsg.group != null) {
                     // Г2 спросил П2
                     print("Преподаватель ответил для переноса пары, пересечений нет");
@@ -339,7 +364,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                 }
             }
         } else {
-            if (step == 2 && myMsg.group != null) {
+            if ((step == 2 || step == 5) && myMsg.group != null) {
                 // Г2 спросил П2
                 print("Некуда переносить");
                 var msg = new ACLMessage();
@@ -353,9 +378,9 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                 // нет больше предметов
                 print("Кончились предметы");
                 switch (step) {
-                    case 1 -> startExchange();
-                    case 2 -> startSync();
-                    case 3 -> setReady(true);
+                    case 1, 4 -> startExchange();
+                    case 2, 3, 5 -> startSync();
+                    case 6 -> setReady(true);
                 }
             }
         }
@@ -372,26 +397,46 @@ class StudentGroupBehaviour extends SimpleBehaviour {
         myAgent.send(mes);
     }
 
-    void startForceTeacher() throws IOException {
-        this.step = 3;
+    void startForce() throws IOException {
+        if (step <= 3) {
+            this.step = 3;
+        } else {
+            this.step = 6;
+        }
 
         // предметы кончились
         askedSubjects.clear();
-        askedTeachers.clear();
+        askedTeachersAuditoriums.clear();
         droppedLesson.clear();
 
         print("!!!Начало принудительного заполнения!!!");
         var askedSubject = askNextSubject(null, true);
         if (!askedSubject) {
             print("Принудительное заполнение не понадобилось");
-            print("Мне осталось: " + model.getRemainingLessonsForTeacher());
+            print("Мне осталось: " + (step <= 3
+                    ? model.getRemainingLessonsForTeacher()
+                    : model.getRemainingLessonsForAuditorium()));
+            if (step <= 3) {
+                startSync();
+            } else {
+                setReady(true);
+            }
 
-            setReady(true);
+        }
+    }
+
+    void startAuditorium() throws IOException {
+        this.step = 4;
+        askNextSubject(null);
+        var askedSubject = askNextSubject(null);
+        if (!askedSubject) {
+            print("Первичное распределение аудиторий завершено");
+            startExchange();
         }
     }
 
     void askWhatGroup(ACLMessage mes, MyMessage myMsg) throws IOException {
-        var myAval = getAvailableForTeacherWithoutDropped();
+        var myAval = getAvailableWithoutDropped();
         if (!myAval.isEmpty()) {
             // шлем чья группа, получим ответ в контесте
             var obj = new ArrayList<String>(2);
@@ -407,75 +452,112 @@ class StudentGroupBehaviour extends SimpleBehaviour {
         } else {
             // нет больше предметов
             print("Кончились пары для обмена");
-
-            if (step == 2) {
-                startSync();
-            } else if (step == 4) {
-                //startForceAuditorium();
-            }
+            startSync();
         }
     }
 
-    void proposalTeacherHandler(ACLMessage mes, boolean force) throws IOException, UnreadableException {
+    void proposalHandler(ACLMessage mes, boolean force) throws IOException, UnreadableException {
         var performative = mes.getPerformative();
         var myMsg = (MyMessage) mes.getContentObject();
         if (performative == ACLMessage.AGREE) {
             // преподаватель установлен
             // читаем группу, день, урок
             var obj = (ArrayList<String>) myMsg.payload;
-            var teacher = obj.get(0);
+            var teacherOrAuditorium = obj.get(0);
             var day = Integer.parseInt(obj.get(1));
             var lesson = Integer.parseInt(obj.get(2));
             var subject = obj.get(3);
             var type = Integer.parseInt(obj.get(4));
 
-            print("Добавлен преподаватель " + teacher + " на " + day +" " + lesson);
-            model.timeTable.get(day).get(lesson).teacher = teacher;
+            print("Добавлен " + (step <= 3 ? "преподаватель " : "аудитория ")  + teacherOrAuditorium + " на " + day +" " + lesson);
+
+            var occupation = model.timeTable.get(day).get(lesson);
+            if (step <= 3) {
+                occupation.teacher = teacherOrAuditorium;
+            } else {
+                occupation.auditorium = teacherOrAuditorium;
+                sendAccept(occupation, day, lesson);
+            }
+
+
             model.timeTable.get(day).get(lesson).subject = subject;
             model.timeTable.get(day).get(lesson).type = type;
 
-            if (step == 1 || this.step == 3) {
+            if (step == 1 || this.step == 3 || this.step == 4 || this.step == 6) {
                 // спрашиваем дальше
-                var askedSubject = askNextSubject(null);
+                var askedSubject = askNextSubject(null, force);
                 // иначе
                 if (!askedSubject) {
                     print("Первичное распределение завершено после очередного заполнения");
-                    print("Мне осталось: " + model.getRemainingLessonsForTeacher());
+                    print("Мне осталось: " + (step <= 3
+                            ? model.getRemainingLessonsForTeacher()
+                            : model.getRemainingLessonsForAuditorium()));
 
                     switch (step) {
-                        case 1 -> startExchange();
-                        case 3 -> setReady(true);
-                    }
+                        case 1, 4 -> startExchange();
+                        case 3 -> startSync();
+                        case 6 -> setReady(true);
 
-                    // для теста первого этапа
-                    // setReady(true);
+                        //case 3 -> setReady(true);
+                    }
                 }
-            } else if (step == 2) {
+            } else if (step == 2 || this.step == 5) {
                 iterationExchange();
             }
         } else {
-            if (step == 1 || this.step == 3) {
+            if (step == 1 || this.step == 3 || this.step == 4 || this.step == 6) {
                 // повторяем предложение
-                availableTeacherHandler(mes, force);
-            } else if (step == 2) {
+                availableHandler(mes, force);
+            } else if (step == 2 || this.step == 5) {
                 // спрашиваем кто
-                var msg = mes.createReply();
-                msg.setConversationId("whatGroup");
-                msg.setContentObject(myMsg);
-                this.myAgent.send(msg);
+                askWhatGroup(mes, myMsg);
             }
         }
     }
 
+    private void sendAccept(OccupationItem occupation, int day, int lesson) throws IOException {
+        var teacher = findTeacher(occupation.teacher);
+        var auditorium = findAuditorium(occupation.auditorium);
+        var teacherName = occupation.teacher;
+
+        var myMsg = new MyMessage();
+        var obj = new ArrayList<String>(3);
+        obj.add(occupation.auditorium);
+        obj.add(Integer.toString(day));
+        obj.add(Integer.toString(lesson));
+        myMsg.payload = obj;
+
+        // преподавателю
+        var mes = new ACLMessage();
+        mes.addReceiver(teacher);
+        mes.setConversationId("selectAuditorium");
+        mes.setContentObject(myMsg);
+        this.myAgent.send(mes);
+
+        // аудитории
+        ((ArrayList<String>)myMsg.payload).set(0, teacherName);
+        mes.clearAllReceiver();
+        mes.addReceiver(auditorium);
+        mes.setConversationId("selectTeacher");
+        mes.setContentObject(myMsg);
+        this.myAgent.send(mes);
+    }
+
     void startExchange() throws IOException {
-        this.step = 2;
-        setExchangeReady(true);
+        if (this.step == 1) {
+            this.step = 2;
+            setExchangeReady(true);
+        } else {
+            this.step = 5;
+            setExchangeReady(true, "2");
+        }
 
         print("Синхронизация");
         // синхронизация
         var flag = true;
         while (flag) {
-            var readyGroups = DFUtilities.searchService(myAgent, "groupExchangeReady");
+            // разные типы, т.к. перерегистрация работает через снятие регистрации
+            var readyGroups = DFUtilities.searchService(myAgent, "groupExchangeReady" + (step == 2 ? "" : "2"));
             var allGroups = DFUtilities.searchService(myAgent, "group");
             if (readyGroups.length >= allGroups.length) {
                 flag = false;
@@ -484,11 +566,12 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                 catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
             }
         }
+
         print("Синхронизация завершена");
 
         // предметы кончились
         askedSubjects.clear();
-        askedTeachers.clear();
+        askedTeachersAuditoriums.clear();
         droppedLesson.clear();
 
         print("Начало обмена");
@@ -496,9 +579,9 @@ class StudentGroupBehaviour extends SimpleBehaviour {
     }
 
     void iterationExchange() throws IOException {
-        var nextSub = getFirstRemainingLessonForTeacher();
+        var nextSub = getFirstRemainingLesson();
         if (nextSub.isPresent()) {
-            var available = getAvailableForTeacherWithoutDropped(true);
+            var available = getAvailableWithoutDropped(true);
             if (!available.isEmpty()) {
 
                 var obj = new ArrayList<String>(3);
@@ -509,49 +592,59 @@ class StudentGroupBehaviour extends SimpleBehaviour {
 
                 // какая группа
                 var mes = new ACLMessage();
-                mes.addReceiver(getNextTeacher(nextSub.get().name));
+                mes.addReceiver(step <= 3
+                        ? getNextTeacher(nextSub.get())
+                        : getNextAuditorium(nextSub.get()));
                 mes.setConversationId("available");
                 mes.setContentObject(body);
                 this.myAgent.send(mes);
             } else {
                 print("Обмен не продолжился, свободных занятий нет");
-
-                if (step == 2) {
-                    startSync();
-                } else if (step == 4) {
-                    //startForceAuditorium();
-                }
+                startSync();
             }
         } else {
             print("Обмен не продолжился, предметы все заполнены");
-            if (step == 2) {
-                startSync();
-            } else if (step == 4) {
-                //startForceAuditorium();
-            }
+            startSync();
         }
     }
 
-    AID getNextTeacher(String subject) {
-        var teachers = DFUtilities.searchService(this.myAgent, "teacher_[" + subject + "]");
+    AID getNextTeacher(Lesson subject) {
+        var teachers = DFUtilities.searchService(this.myAgent, "teacher_[" + subject.name + "]");
         for (AID teacher : teachers) {
-            if (!askedTeachers.contains(teacher.getName())) {
+            if (!askedTeachersAuditoriums.contains(teacher.getName())) {
                 return teacher;
             }
         }
         return null;
     }
 
-    Optional<Lesson> getFirstRemainingLessonForTeacher() {
-        return model.getRemainingLessonsForTeacher().stream()
+    AID getNextAuditorium(Lesson subject) {
+        var auditoriums = DFUtilities.searchService(this.myAgent,
+                "auditorium" + (subject.type == LessonType.LECTURE ? "Lecture" : "Practice"));
+        for (AID auditorium : auditoriums) {
+            if (!askedTeachersAuditoriums.contains(auditorium.getName())) {
+                return auditorium;
+            }
+        }
+        return null;
+    }
+
+    Optional<Lesson> getFirstRemainingLesson() {
+        var remaining = step <= 3
+                ? model.getRemainingLessonsForTeacher()
+                : model.getRemainingLessonsForAuditorium();
+
+        return remaining.stream()
                 .filter(lesson -> !askedSubjects.contains(lesson.name))
                 .findFirst();
     }
 
     SimpleEntry<Integer, Integer> getFirstIntersection(ArrayList<SimpleEntry<Integer, Integer>> availableInfo, boolean withoutDropped, boolean force) {
         var myAvailable = withoutDropped
-                ? getAvailableForTeacherWithoutDropped()
-                : model.getAvailableForTeacher(force);
+                ? getAvailableWithoutDropped()
+                : (step <= 3
+                    ? model.getAvailableForTeacher(force)
+                    : model.getAvailableForAuditorium(force));
 
         for (var myAval : myAvailable) {
             var isContain = availableInfo.stream().anyMatch(teacherAval -> {
@@ -565,12 +658,14 @@ class StudentGroupBehaviour extends SimpleBehaviour {
         return null;
     }
 
-    ArrayList<SimpleEntry<Integer, Integer>> getAvailableForTeacherWithoutDropped() {
-        return getAvailableForTeacherWithoutDropped(false);
+    ArrayList<SimpleEntry<Integer, Integer>> getAvailableWithoutDropped() {
+        return getAvailableWithoutDropped(false);
     }
 
-    ArrayList<SimpleEntry<Integer, Integer>> getAvailableForTeacherWithoutDropped(boolean force) {
-        var myAvailable = model.getAvailableForTeacher(force);
+    ArrayList<SimpleEntry<Integer, Integer>> getAvailableWithoutDropped(boolean force) {
+        var myAvailable = step <= 3
+                ? model.getAvailableForTeacher(force)
+                : model.getAvailableForAuditorium(force);
 
         return new ArrayList(myAvailable.stream().filter(myAval ->
                 droppedLesson.stream().noneMatch(dropped -> {
@@ -580,12 +675,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
         ).toList());
     }
 
-    boolean askNextTeacher(String subject) throws IOException {
-        return askNextTeacher(subject, false);
-    }
-
-    boolean askNextTeacher(String subject, boolean force) throws IOException {
-        var next = getNextTeacher(subject);
+    boolean askNextTeacherAuditorium(AID next, boolean force)  throws IOException {
         if (next != null) {
             // спрашиваем следующего
             var nextMes = new ACLMessage();
@@ -599,24 +689,36 @@ class StudentGroupBehaviour extends SimpleBehaviour {
         return false;
     }
 
-    boolean askNextSubject(String prev) throws IOException {
+    boolean askNextTeacher(Lesson subject, boolean force) throws IOException {
+        return askNextTeacherAuditorium(getNextTeacher(subject), force);
+    }
+
+    boolean askNextAuditorium(Lesson subject, boolean force) throws IOException {
+        return askNextTeacherAuditorium(getNextAuditorium(subject), force);
+    }
+
+    boolean askNextSubject(Lesson prev) throws IOException {
         return askNextSubject(prev, false);
     }
 
-    boolean askNextSubject(String prev, boolean force) throws IOException {
+    boolean askNextSubject(Lesson prev, boolean force) throws IOException {
         if (prev != null) {
             // помечаем предмет как опрошенный
-            askedSubjects.add(prev);
+            askedSubjects.add(prev.name);
         } else {
             askedSubjects.clear();
         }
 
         // очищаем временные значения
-        askedTeachers.clear();
+        askedTeachersAuditoriums.clear();
 
-        var subject = getFirstRemainingLessonForTeacher();
+        var subject = getFirstRemainingLesson();
         if (subject.isPresent()) {
-            return askNextTeacher(subject.get().name, force);
+            if (step <= 3) {
+                return askNextTeacher(subject.get(), force);
+            } else {
+                return askNextAuditorium(subject.get(), force);
+            }
         }
         return false;
     }
@@ -630,8 +732,9 @@ class StudentGroupBehaviour extends SimpleBehaviour {
         mes.setContent(model.name);
         mes.setConversationId("READY_GROUP");
         if (isReady) {
-            print("Мне осталось: " + model.getRemainingLessonsForTeacher());
-            // print("Еще активны: " + remainingGroups().toString());
+            print("Мне осталось: " + (step <= 3
+                    ? model.getRemainingLessonsForTeacher()
+                    : model.getRemainingLessonsForAuditorium()));
 
             mes.setPerformative(ACLMessage.AGREE);
         } else {
@@ -641,7 +744,11 @@ class StudentGroupBehaviour extends SimpleBehaviour {
     }
 
     void setExchangeReady(boolean isReady) {
-        ((StudentGroupAgent)myAgent).setExchangeReady(isReady);
+        setExchangeReady(isReady, "");
+    }
+
+    void setExchangeReady(boolean isReady, String postfix) {
+        ((StudentGroupAgent)myAgent).setExchangeReady(isReady, postfix);
     }
 
     void setExchangeDone(boolean isReady) {

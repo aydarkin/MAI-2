@@ -2,12 +2,8 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import utils.DFUtilities;
 
 import java.io.IOException;
@@ -174,13 +170,13 @@ class TeacherBehaviour extends SimpleBehaviour {
                         // отменить можно только свою пару
                         reply.setPerformative(ACLMessage.CANCEL);
                         var occupation = model.timeTable.get(day).get(lesson);
-                        if (occupation.group.equals(group)) {
+                        if (occupation.group != null && occupation.group.equals(group)) {
                             occupation.group = null;
 
                             var newOccupation = model.timeTable.get(newDay).get(newLesson);
                             if (newOccupation.group == null) {
                                 newOccupation.group = group;
-                                myMsg.teacher = model.name;
+                                myMsg.teacherOrAuditorium = model.name;
                                 reply.setContentObject(myMsg);
                                 reply.setPerformative(ACLMessage.AGREE);
                             }

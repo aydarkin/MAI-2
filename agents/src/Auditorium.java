@@ -62,7 +62,8 @@ public class Auditorium {
             result.add(currentDay);
             for (int j = 0; j < 8; j++) {
                 item = timeTable.get(i).get(j);
-                if (item.teacher != null && item.group != null) {
+                //if (item.teacher != null && item.group != null) {
+                if (item.group != null) {
                     currentLesson = new JSONObject();
                     currentLesson.put("group", item.group);
                     currentLesson.put("subject", item.subject);

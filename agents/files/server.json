@@ -465,165 +465,165 @@
     ],
     "auditoriums": [
         {
-            "name": "1",
+            "name": "A1",
             "capacity": 100,
             "type": 0
         },
         {
-            "name": "2",
+            "name": "A2",
             "capacity": 30,
             "type": 0
         },
         {
-            "name": "3",
+            "name": "A3",
             "capacity": 100,
             "type": 0
         },
         {
-            "name": "4",
+            "name": "A4",
             "capacity": 100,
             "type": 1
         },
         {
-            "name": "5",
+            "name": "A5",
             "capacity": 100,
             "type": 1
         },
         {
-            "name": "6",
+            "name": "A6",
             "capacity": 100,
             "type": 1
         },
         {
-            "name": "7",
+            "name": "A7",
             "capacity": 50,
             "type": 0
         },
         {
-            "name": "8",
+            "name": "A8",
             "capacity": 200,
             "type": 1
         },
         {
-            "name": "301",
+            "name": "A301",
             "capacity": 34,
             "type": 0
         },
         {
-            "name": "302",
+            "name": "A302",
             "capacity": 100,
             "type": 0
         },
         {
-            "name": "303",
+            "name": "A303",
             "capacity": 40,
             "type": 1
         }
         ,
         {
-            "name": "304",
+            "name": "A304",
             "capacity": 236,
             "type": 1
         }
         ,
         {
-            "name": "140",
+            "name": "A140",
             "capacity": 80,
             "type": 0
         },
         {
-            "name": "290",
+            "name": "A290",
             "capacity": 110,
             "type": 0
         },
         {
-            "name": "120",
+            "name": "A120",
             "capacity": 40,
             "type": 1
         },
         {
-            "name": "234",
+            "name": "A234",
             "capacity": 45,
             "type": 1
         },
         {
-            "name": "123",
+            "name": "A123",
             "capacity": 70,
             "type": 0
         },
         {
-            "name": "214",
+            "name": "A214",
             "capacity": 35,
             "type": 1
         },
         {
-            "name": "167",
+            "name": "A167",
             "capacity": 85,
             "type": 0
         },
         {
-            "name": "229",
+            "name": "A229",
             "capacity": 40,
             "type": 1
         }
         ,
         {
-            "name": "412",
+            "name": "A412",
             "capacity": 40,
             "type": 1
         },
         {
-            "name": "413",
+            "name": "A413",
             "capacity": 30,
             "type": 0
         },
         {
-            "name": "414",
+            "name": "A414",
             "capacity": 70,
             "type": 0
         },
         {
-            "name": "415",
+            "name": "A415",
             "capacity": 50,
             "type": 1
         },
         {
-            "name": "416",
+            "name": "A416",
             "capacity": 40,
             "type": 0
         },
         {
-            "name": "417",
+            "name": "A417",
             "capacity": 62,
             "type": 0
         },
         {
-            "name": "418",
+            "name": "A418",
             "capacity": 45,
             "type": 1
         },
         {
-            "name": "419",
+            "name": "A419",
             "capacity": 42,
             "type": 1
         },
         {
-            "name": "450",
+            "name": "A450",
             "capacity": 80,
             "type": 1
         },
         {
-            "name": "289",
+            "name": "A289",
             "capacity": 36,
             "type": 1
         },
         {
-            "name": "126",
+            "name": "A126",
             "capacity": 35,
             "type": 0
         },
         {
-            "name": "127",
+            "name": "A127",
             "capacity": 55,
             "type": 0
         }

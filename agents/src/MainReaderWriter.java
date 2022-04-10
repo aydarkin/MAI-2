@@ -124,4 +124,135 @@ public class MainReaderWriter {
 
         }
     }
+
+    public static void writeCsvServer(JSONObject obj, String outFile) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "WINDOWS-1251"))) {
+            var result = new StringBuilder();
+            JSONObject teacher, lesson, auditorium;
+            JSONArray timeTable, day;
+
+            var empties = new ArrayList<String>();
+            var counter = 0;
+
+            // преподаватель, День недели, № занятия, Группа, Предмет, Тип, Аудитория,
+            var teachers = (JSONArray)obj.get("teacher");
+            result.append("Преподаватель;день недели;№ занятия;Группа;Предмет;Тип;Аудитория\n");
+            for (int i = 0; i < teachers.size(); i++) {
+                counter = 0;
+                teacher = (JSONObject)teachers.get(i);
+                timeTable = (JSONArray)teacher.get("timetable");
+                for (int j = 0; j < timeTable.size(); j++) {
+                    day = (JSONArray)timeTable.get(j);
+                    for (int k = 0; k < day.size(); k++) {
+                        lesson = (JSONObject)day.get(k);
+                        result.append(j == 0 && k == 0 ? teacher.get("teacher") : "").append(";");
+                        result.append(k == 0 ? DayOfWeek.get(j) : "").append(";");
+
+                        result.append(lesson.get("number")).append(";");
+                        result.append(lesson.get("group")).append(";");
+                        result.append(lesson.get("subject")).append(";");
+                        result.append(lesson.get("type")).append(";");
+                        result.append(lesson.get("auditorium")).append("\n");
+                        counter++;
+                    }
+                }
+
+                if (counter == 0) {
+                    empties.add((String) teacher.get("teacher"));
+                }
+            }
+            for (int i = 0; i < empties.size(); i++) {
+                result.append(i == 0 ? "Не задействованы ;" : ";");
+                result.append(empties.get(i)).append("\n");
+            }
+
+            empties.clear();
+
+            result.append(";;;;;;\n");
+            result.append("Аудитория;день недели;№ занятия;Группа;Предмет;Тип;Преподаватель\n");
+            // аудитория, День недели, № занятия, Группа, Предмет, Тип, Преподаватель,
+            var auditoriums = (JSONArray)obj.get("auditorium");
+            for (int i = 0; i < auditoriums.size(); i++) {
+                counter = 0;
+                auditorium = (JSONObject)auditoriums.get(i);
+                timeTable = (JSONArray)auditorium.get("timetable");
+                for (int j = 0; j < timeTable.size(); j++) {
+                    day = (JSONArray)timeTable.get(j);
+                    for (int k = 0; k < day.size(); k++) {
+                        lesson = (JSONObject)day.get(k);
+                        result.append(j == 0 && k == 0 ? auditorium.get("auditorium") : "").append(";");
+                        result.append(k == 0 ? DayOfWeek.get(j) : "").append(";");
+
+                        result.append(lesson.get("number")).append(";");
+                        result.append(lesson.get("group")).append(";");
+                        result.append(lesson.get("subject")).append(";");
+                        result.append(lesson.get("type")).append(";");
+                        result.append(lesson.get("teacher")).append("\n");
+                        counter++;
+                    }
+                }
+
+                if (counter == 0) {
+                    empties.add((String) auditorium.get("auditorium"));
+                }
+            }
+            for (int i = 0; i < empties.size(); i++) {
+                result.append(i == 0 ? "Не задействованы ;" : ";");
+                result.append(empties.get(i)).append("\n");
+            }
+
+            writer.write(result.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeCsvClient(JSONArray groups, String outFile) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "WINDOWS-1251"))) {
+            var result = new StringBuilder();
+            JSONObject group, lesson;
+            JSONArray timeTable, day;
+
+            // преподаватель, День недели, № занятия, Группа, Предмет, Тип, Аудитория,
+            result.append("Группа;день недели;№ занятия;Преподаватель;Предмет;Тип;Аудитория\n");
+            for (int i = 0; i < groups.size(); i++) {
+                group = (JSONObject)groups.get(i);
+                timeTable = (JSONArray)group.get("timetable");
+                for (int j = 0; j < timeTable.size(); j++) {
+                    day = (JSONArray)timeTable.get(j);
+                    for (int k = 0; k < day.size(); k++) {
+                        lesson = (JSONObject)day.get(k);
+                        result.append(j == 0 && k == 0 ? group.get("group") : "").append(";");
+                        result.append(k == 0 ? DayOfWeek.get(j) : "").append(";");
+
+                        result.append(lesson.get("number")).append(";");
+                        result.append(lesson.get("teacher")).append(";");
+                        result.append(lesson.get("subject")).append(";");
+                        result.append(lesson.get("type")).append(";");
+                        result.append(lesson.get("auditorium")).append("\n");
+                    }
+                }
+            }
+
+            writer.write(result.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+class DayOfWeek {
+    public static String get(int day) {
+        var result = "";
+        switch (day) {
+            case 0 -> result = "Понедельник";
+            case 1 -> result = "Вторник";
+            case 2 -> result = "Среда";
+            case 3 -> result = "Четверг";
+            case 4 -> result = "Пятница";
+            case 5 -> result = "Суббота";
+            case 6 -> result = "Воскресенье";
+        }
+        return result;
+    }
 }

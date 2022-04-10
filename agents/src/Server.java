@@ -194,7 +194,7 @@ class ServerBehaviour extends SimpleBehaviour {
                     e.printStackTrace();
                 }
                 if (teacherResults.size() >= teachers.size() && auditoriumResults.size() >= auditoriums.size()) {
-                    MainReaderWriter.write(results, this.outputFile);
+                    MainReaderWriter.writeCsvServer(results, this.outputFile);
                     Container.Kill(myAgent);
 
                     this.step = 0;

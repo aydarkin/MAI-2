@@ -4,7 +4,7 @@ import java.util.AbstractMap.SimpleEntry;
 public class MyMessage implements Serializable {
     public Lesson subject;
     public String group;
-    public String teacher;
+    public String teacherOrAuditorium;
     public SimpleEntry<Integer, Integer> targetLesson;
     public Serializable payload;
 

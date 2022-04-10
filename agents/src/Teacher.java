@@ -4,8 +4,6 @@ import org.json.simple.JSONObject;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 
-
-
 public class Teacher {
     protected String name;
     protected ArrayList<String> subjects;

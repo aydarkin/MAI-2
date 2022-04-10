@@ -2,7 +2,6 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import org.json.simple.JSONObject;
 import utils.DFUtilities;
@@ -68,14 +67,14 @@ class AuditoriumBehaviour extends SimpleBehaviour {
                         print("Шлем результаты серверу");
                         myAgent.send(reply);
                     }
-                    case "available" -> {
+                    case "available", "availableForce" -> {
                         var obj = (MyMessage) mes.getContentObject();
                         obj.payload = model.getAvailable();
 
                         reply.setContentObject(obj);
                         myAgent.send(reply);
                     }
-                    case "proposal" -> {
+                    case "proposal", "proposalForce" -> {
                         proposalHandler(mes);
                     }
                     case "whatGroup" -> {
@@ -130,9 +129,10 @@ class AuditoriumBehaviour extends SimpleBehaviour {
                             occupation.group = null;
 
                             var newOccupation = model.timeTable.get(newDay).get(newLesson);
-                            if (newOccupation.group == null) {
+                            // fixme заглушка
+                            if (newOccupation.group == null && false) {
                                 newOccupation.group = group;
-                                myMsg.teacher = model.name;
+                                myMsg.teacherOrAuditorium = model.name;
                                 reply.setContentObject(myMsg);
                                 reply.setPerformative(ACLMessage.AGREE);
                             }
@@ -141,7 +141,8 @@ class AuditoriumBehaviour extends SimpleBehaviour {
                     }
                     case "selectTeacher" -> {
                         // читаем аудиторию, день, урок
-                        var obj = (ArrayList<String>) mes.getContentObject();
+                        var myMsg = (MyMessage) mes.getContentObject();
+                        var obj = (ArrayList<String>) myMsg.payload;
                         var teacher = obj.get(0);
                         var day = Integer.parseInt(obj.get(1));
                         var lesson = Integer.parseInt(obj.get(2));

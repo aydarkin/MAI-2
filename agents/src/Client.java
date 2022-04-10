@@ -227,8 +227,7 @@ class ClientBehaviour extends SimpleBehaviour {
                     e.printStackTrace();
                 }
                 if (results.size() >= groups.size()) {
-                    MainReaderWriter.write(results, this.outputFile);
-                    Container.Kill(myAgent);
+                    MainReaderWriter.writeCsvClient(results, this.outputFile);
                     finish();
                 }
             }
@@ -256,7 +255,7 @@ class ClientBehaviour extends SimpleBehaviour {
 
     void requestTimetable() {
         var length = allRequest("TIMETABLE_GROUP");
-        Output("Запроены результатов у " + length + " групп");
+        Output("Запрошены результаты у " + length + " групп");
     }
 
     @Override

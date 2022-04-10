@@ -48,8 +48,8 @@ public class StudentGroup {
 
         // если нужны 5-8 пары
         if (force) {
-            for (int i = 0; i < 6; i++) {
-                for (int j = 4; j < 8; j++) {
+            for (int j = 4; j < 8; j++) {
+                for (int i = 0; i < 6; i++) {
                     if (timeTable.get(i).get(j).teacher == null) {
                         items.add(new SimpleEntry<Integer, Integer>(i, j));
                     }
@@ -57,9 +57,34 @@ public class StudentGroup {
             }
         }
 
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < 4; j++) {
+            for (int i = 0; i < 6; i++) {
                 if (timeTable.get(i).get(j).teacher == null) {
+                    items.add(new SimpleEntry<Integer, Integer>(i, j));
+                }
+            }
+        }
+
+        return items;
+    }
+
+    public ArrayList<SimpleEntry<Integer, Integer>> getAvailableForAuditorium(boolean force) {
+        var items = new ArrayList<SimpleEntry<Integer, Integer>>();
+
+        // если нужны 5-8 пары
+        if (force) {
+            for (int j = 4; j < 8; j++) {
+                for (int i = 0; i < 6; i++) {
+                    if (timeTable.get(i).get(j).auditorium == null && timeTable.get(i).get(j).teacher != null) {
+                        items.add(new SimpleEntry<Integer, Integer>(i, j));
+                    }
+                }
+            }
+        }
+
+        for (int j = 0; j < 4; j++) {
+            for (int i = 0; i < 6; i++) {
+                if (timeTable.get(i).get(j).auditorium == null && timeTable.get(i).get(j).teacher != null) {
                     items.add(new SimpleEntry<Integer, Integer>(i, j));
                 }
             }
@@ -93,9 +118,6 @@ public class StudentGroup {
             for (int i = 0; i < (sub.practics - practics); i++) {
                 result.add(new Lesson(sub.name, LessonType.PRACTICE));
             }
-
-            //System.out.println(this.name + ": по " + sub.name +" осталось практик " + (sub.practics - practics));
-            //System.out.println(this.name + ": по " + sub.name +" осталось лекций " + (sub.lections - lections));
         }
         return result;
     }
@@ -110,7 +132,7 @@ public class StudentGroup {
             for (int i = 0; i < 6; i++) {
                 for (int j = 0; j < 8; j++) {
                     item = timeTable.get(i).get(j);
-                    if (item.subject != null && item.subject.equals(sub.name) && item.auditorium != null) {
+                    if (item.subject != null && item.subject.equals(sub.name) && item.teacher != null && item.auditorium != null) {
                         if (item.type == LessonType.PRACTICE)
                             practics++;
                         else

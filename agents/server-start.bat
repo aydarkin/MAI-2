@@ -1,1 +1,1 @@
-start.bat server
+start.bat server 192.168.31.141
