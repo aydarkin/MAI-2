@@ -335,7 +335,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                     print((step <= 3 ? "Преподаватели" : "Аудитории") + " кончились. Спрашиваем следующий предмет");
                     var askedSubject = askNextSubject(subject.get(), force);
                     if (!askedSubject) {
-                        print("Первичное распределение завершено");
+                        print((force ? "Р" : "Первичное р") + "аспределение завершено");
                         print("Мне осталось: " + (step <= 3
                                 ? model.getRemainingLessonsForTeacher()
                                 : model.getRemainingLessonsForAuditorium()));
@@ -488,7 +488,7 @@ class StudentGroupBehaviour extends SimpleBehaviour {
                 var askedSubject = askNextSubject(null, force);
                 // иначе
                 if (!askedSubject) {
-                    print("Первичное распределение завершено после очередного заполнения");
+                    print((force ? "Р" : "Первичное р") + "аспределение завершено после очередного заполнения");
                     print("Мне осталось: " + (step <= 3
                             ? model.getRemainingLessonsForTeacher()
                             : model.getRemainingLessonsForAuditorium()));
