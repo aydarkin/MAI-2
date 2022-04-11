@@ -27,7 +27,7 @@ goto :eof
 :client
 call utils.bat compile
 echo "Running.."
-java -cp "lib/jade.jar;lib/json-simple-1.1.1.jar;class/item;class/utils;class" jade.Boot -container -host %1 -port 1099 clientAgent:Client(files\client.json,files\output.csv)
+java -cp "lib/jade.jar;lib/json-simple-1.1.1.jar;class/item;class/utils;class" jade.Boot -container -host %1 -local-host %2 -port 1099 clientAgent:Client(files\client.json,files\output.csv)
 
 goto :eof
 
@@ -35,7 +35,7 @@ goto :eof
 if %1==server (
         call :server %2
 ) else if %1==client (
-        call :client %2
+        call :client %2 %3
 )
 
 

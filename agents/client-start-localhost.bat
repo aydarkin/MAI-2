@@ -1,1 +1,1 @@
-start.bat client localhost
+start.bat client localhost localhost
